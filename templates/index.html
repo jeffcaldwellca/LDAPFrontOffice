@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --success-color: #059669;
+            --danger-color: #dc2626;
+            --warning-color: #d97706;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --border-color: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius: 0.75rem;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Login Modal */
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1050;
+        }
+
+        .login-card {
+            background: var(--bg-secondary);
+            padding: 3rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 400px;
+            margin: 1rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-logo img {
+            max-width: 120px;
+            height: auto;
+        }
+
+        .login-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .login-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        /* Header */
+        .app-header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            padding: 1.25rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            font-size: 1.375rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .header-brand:hover {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .header-brand i {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            color: var(--text-secondary);
+            font-size: 0.925rem;
+            font-weight: 500;
+            background: var(--bg-primary);
+            padding: 0.625rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .user-info i {
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+
+        .logout-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 0.625rem 1.125rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: var(--danger-color);
+            color: white;
+            border-color: var(--danger-color);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem 0;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            margin-bottom: 3rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Search Section */
+        .search-section {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .search-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .search-header i {
+            color: var(--primary-color);
+            font-size: 1.25rem;
+        }
+
+        .search-input-group {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 3rem 1rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            background: var(--bg-primary);
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        .search-results {
+            margin-top: 1rem;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            background: white;
+            border: 1px solid var(--border-color);
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .search-result-item {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .search-result-item:hover {
+            background: var(--bg-primary);
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .search-result-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .search-result-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .search-result-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .search-result-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--border-color);
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* User Details Section */
+        .user-details {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .user-details-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .user-details-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+        }
+
+        .user-profile {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 2rem;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .user-profile-info h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .user-profile-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            opacity: 0.9;
+        }
+
+        .user-profile-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .user-form {
+            padding: 2rem;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-section-title i {
+            color: var(--primary-color);
+        }
+
+        .form-floating {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-floating .form-control {
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1rem 0.75rem;
+            font-size: 1rem;
+            background: var(--bg-primary);
+            transition: all 0.2s;
+        }
+
+        .form-floating .form-control:focus {
+            border-color: var(--primary-color);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-floating label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .readonly-field {
+            background: var(--bg-primary) !important;
+            cursor: not-allowed;
+        }
+
+        /* Manager Search */
+        .manager-search-container {
+            position: relative;
+        }
+
+        .manager-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 0.25rem;
+        }
+
+        .manager-option {
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .manager-option:hover {
+            background: var(--bg-primary);
+        }
+
+        .manager-option:last-child {
+            border-bottom: none;
+        }
+
+        .manager-option-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .current-manager {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Form Actions */
+        .form-actions {
+            background: var(--bg-primary);
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .btn-modern {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-secondary);
+            border-color: var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border-color: var(--text-secondary);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Alerts */
+        .alert-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1100;
+            max-width: 400px;
+        }
+
+        .alert-modern {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        .alert-success {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .alert-danger {
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .alert-warning {
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .alert-icon {
+            font-size: 1.25rem;
+        }
+
+        .alert-success .alert-icon {
+            color: var(--success-color);
+        }
+
+        .alert-danger .alert-icon {
+            color: var(--danger-color);
+        }
+
+        .alert-warning .alert-icon {
+            color: var(--warning-color);
+        }
+
+        .alert-content {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .alert-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0;
+            font-size: 1.25rem;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .alert-close:hover {
+            opacity: 1;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .search-section,
+            .user-form {
+                padding: 1.5rem;
+            }
+
+            .user-details-header {
+                padding: 1.5rem;
+            }
+
+            .user-profile {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .user-profile-meta {
+                justify-content: center;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .btn-modern {
+                justify-content: center;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .user-menu {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        /* Loading States */
+        .btn-loading {
+            position: relative;
+            color: transparent !important;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        /* Custom scrollbar */
+        .search-results::-webkit-scrollbar,
+        .manager-dropdown::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .search-results::-webkit-scrollbar-track,
+        .manager-dropdown::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        .search-results::-webkit-scrollbar-thumb,
+        .manager-dropdown::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        .search-results::-webkit-scrollbar-thumb:hover,
+        .manager-dropdown::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Login Modal -->
+        <div id="loginModal" class="login-modal" style="display: none;">
+            <div class="login-card">
+                <div class="login-logo">
+                    <img src="assets/Logosm.png" alt="Company Logo">
+                </div>
+                <h1 class="login-title">Welcome Back</h1>
+                <p class="login-subtitle">Sign in to access the User Management Portal</p>
+                
+                <form id="loginForm">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="loginUsername" name="username" 
+                               placeholder="Username" required>
+                        <label for="loginUsername">Domain Username</label>
+                    </div>
+                    <div class="form-floating mb-4">
+                        <input type="password" class="form-control" id="loginPassword" name="password" 
+                               placeholder="Password" required>
+                        <label for="loginPassword">Password</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-modern w-100 mb-3">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Sign In
+                    </button>
+                    <div id="loginError" class="alert alert-danger alert-modern" style="display: none;">
+                        <i class="fas fa-exclamation-triangle alert-icon"></i>
+                        <div class="alert-content"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Authenticated Content -->
+        <div id="authenticatedContent" style="display: none;">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-content">
+                    <a href="/" class="header-brand">
+                        <i class="fas fa-users"></i>
+                        User Management Portal
+                    </a>
+                    <div class="user-menu">
+                        <div class="user-info">
+                            <i class="fas fa-user"></i>
+                            <span id="currentUser"></span>
+                        </div>
+                        <button id="logoutBtn" class="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <h1 class="page-title">
+                    <i class="fas fa-search me-3"></i>
+                    Find and Manage Users
+                </h1>
+
+                <!-- Search Section -->
+                <section class="search-section">
+                    <div class="search-header">
+                        <i class="fas fa-search"></i>
+                        <h3>Search Directory</h3>
+                    </div>
+                    
+                    <div class="search-input-group">
+                        <input type="text" class="search-input" id="searchInput" 
+                               placeholder="Search by name, username, email, or department..." 
+                               autocomplete="off">
+                        <i class="fas fa-search search-icon"></i>
+                    </div>
+                    
+                    <div id="searchResults" class="search-results" style="display: none;"></div>
+                </section>
+
+                <!-- User Details Section -->
+                <section id="userDetails" class="user-details" style="display: none;">
+                    <div class="user-details-header">
+                        <div class="user-profile">
+                            <div class="user-avatar-large" id="userAvatar">
+                                <!-- Avatar initials will be set by JS -->
+                            </div>
+                            <div class="user-profile-info">
+                                <h2 id="userDisplayName">Loading...</h2>
+                                <div class="user-profile-meta">
+                                    <span id="userEmail">
+                                        <i class="fas fa-envelope"></i>
+                                        <span></span>
+                                    </span>
+                                    <span id="userTitle">
+                                        <i class="fas fa-briefcase"></i>
+                                        <span></span>
+                                    </span>
+                                    <span id="userDepartment">
+                                        <i class="fas fa-building"></i>
+                                        <span></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="userForm" class="user-form">
+                        <!-- Personal Information -->
+                        <div class="form-section">
+                            <h4 class="form-section-title">
+                                <i class="fas fa-user"></i>
+                                Personal Information
+                            </h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control readonly-field" id="username" readonly>
+                                        <label for="username">Username</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="email" class="form-control readonly-field" id="email" readonly>
+                                        <label for="email">Email Address</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="firstName" name="firstName">
+                                        <label for="firstName">First Name</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="lastName" name="lastName">
+                                        <label for="lastName">Last Name</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="form-section">
+                            <h4 class="form-section-title">
+                                <i class="fas fa-phone"></i>
+                                Contact Information
+                            </h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="tel" class="form-control" id="phone" name="phone">
+                                        <label for="phone">Phone Number</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Work Information -->
+                        <div class="form-section">
+                            <h4 class="form-section-title">
+                                <i class="fas fa-briefcase"></i>
+                                Work Information
+                            </h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="title" name="title">
+                                        <label for="title">Job Title</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="department" name="department">
+                                        <label for="department">Department</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-floating manager-search-container">
+                                        <input type="text" class="form-control" id="managerSearch" 
+                                               placeholder="Search for manager..." autocomplete="off">
+                                        <label for="managerSearch">Manager</label>
+                                        <input type="hidden" id="managerDN" name="manager">
+                                        <div id="managerDropdown" class="manager-dropdown" style="display: none;"></div>
+                                    </div>
+                                    <div id="currentManager" class="current-manager" style="display: none;">
+                                        <i class="fas fa-user-tie"></i>
+                                        <span>Current manager: <strong id="currentManagerName"></strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary btn-modern" id="cancelBtn">
+                            <i class="fas fa-times"></i>
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-modern" id="saveBtn" form="userForm">
+                            <i class="fas fa-save"></i>
+                            Save Changes
+                        </button>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- Alert Container -->
+        <div id="alertContainer" class="alert-container"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Application State
+        let searchTimeout;
+        let managerSearchTimeout;
+        let currentUser = null;
+        let isLoading = false;
+        
+        // Utility Functions
+        function getInitials(name) {
+            if (!name) return '?';
+            return name.split(' ')
+                      .map(word => word.charAt(0))
+                      .slice(0, 2)
+                      .join('')
+                      .toUpperCase();
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function showAlert(message, type = 'success', duration = 5000) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertId = 'alert-' + Date.now();
+            
+            const iconMap = {
+                success: 'fas fa-check-circle',
+                danger: 'fas fa-exclamation-triangle',
+                warning: 'fas fa-exclamation-circle',
+                info: 'fas fa-info-circle'
+            };
+
+            const alert = document.createElement('div');
+            alert.id = alertId;
+            alert.className = `alert-modern alert-${type}`;
+            alert.innerHTML = `
+                <i class="${iconMap[type]} alert-icon"></i>
+                <div class="alert-content">${message}</div>
+                <button class="alert-close" onclick="removeAlert('${alertId}')">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+
+            alertContainer.appendChild(alert);
+
+            if (duration > 0) {
+                setTimeout(() => removeAlert(alertId), duration);
+            }
+        }
+
+        function removeAlert(alertId) {
+            const alert = document.getElementById(alertId);
+            if (alert) {
+                alert.style.animation = 'slideInRight 0.3s ease-out reverse';
+                setTimeout(() => alert.remove(), 300);
+            }
+        }
+
+        function setButtonLoading(button, loading = true) {
+            if (loading) {
+                button.disabled = true;
+                button.classList.add('btn-loading');
+                button.setAttribute('data-original-text', button.textContent);
+            } else {
+                button.disabled = false;
+                button.classList.remove('btn-loading');
+                const originalText = button.getAttribute('data-original-text');
+                if (originalText) {
+                    button.innerHTML = originalText;
+                }
+            }
+        }
+
+        // Authentication Functions
+        function checkAuthentication() {
+            const isAuthenticated = ('{{ authenticated|default(false) }}' === 'true' || '{{ authenticated|default(false) }}' === '1');
+            const username = '{{ currentUser|default("") }}';
+
+            if (isAuthenticated && username) {
+                showAuthenticatedContent(username);
+            } else {
+                showLoginModal();
+            }
+        }
+
+        function showLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+            document.getElementById('authenticatedContent').style.display = 'none';
+            document.getElementById('loginUsername').focus();
+        }
+
+        function showAuthenticatedContent(username) {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('authenticatedContent').style.display = 'block';
+            document.getElementById('currentUser').textContent = username;
+            
+            // Focus on search input
+            setTimeout(() => {
+                document.getElementById('searchInput').focus();
+            }, 100);
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const errorDiv = document.getElementById('loginError');
+            const errorContent = errorDiv.querySelector('.alert-content');
+            
+            setButtonLoading(submitBtn, true);
+            errorDiv.style.display = 'none';
+            
+            const formData = new FormData(event.target);
+            
+            fetch('/login', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    errorContent.textContent = data.error || 'Login failed. Please check your credentials.';
+                    errorDiv.style.display = 'flex';
+                }
+            })
+            .catch(error => {
+                errorContent.textContent = 'Network error: ' + error.message;
+                errorDiv.style.display = 'flex';
+            })
+            .finally(() => {
+                setButtonLoading(submitBtn, false);
+            });
+        }
+
+        function handleLogout() {
+            fetch('/logout', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                showAlert('Logout failed: ' + error.message, 'danger');
+            });
+        }
+
+        // Search Functions
+        const debouncedSearch = debounce((searchTerm) => {
+            if (searchTerm.length < 2) {
+                hideSearchResults();
+                return;
+            }
+            performSearch(searchTerm);
+        }, 300);
+
+        function handleSearchInput(event) {
+            const searchTerm = event.target.value.trim();
+            debouncedSearch(searchTerm);
+        }
+
+        function performSearch(searchTerm) {
+            const resultsContainer = document.getElementById('searchResults');
+            
+            showSearchResults();
+            resultsContainer.innerHTML = `
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    Searching directory...
+                </div>
+            `;
+            
+            fetch(`/search?q=${encodeURIComponent(searchTerm)}`)
+                .then(response => {
+                    if (response.status === 401) {
+                        location.reload();
+                        return;
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        resultsContainer.innerHTML = `
+                            <div class="no-results">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <h5>Search Error</h5>
+                                <p>${data.error}</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    if (data.users.length === 0) {
+                        resultsContainer.innerHTML = `
+                            <div class="no-results">
+                                <i class="fas fa-user-slash"></i>
+                                <h5>No Users Found</h5>
+                                <p>Try adjusting your search terms</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    renderSearchResults(data.users);
+                })
+                .catch(error => {
+                    resultsContainer.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h5>Search Failed</h5>
+                            <p>${error.message}</p>
+                        </div>
+                    `;
+                });
+        }
+
+        function renderSearchResults(users) {
+            const resultsContainer = document.getElementById('searchResults');
+            
+            const html = users.map(user => {
+                const initials = getInitials(user.displayName || user.username);
+                const email = user.email || '';
+                const title = user.title || '';
+                const department = user.department || '';
+                
+                return `
+                    <div class="search-result-item" onclick="loadUser('${user.username}')">
+                        <div class="search-result-avatar">${initials}</div>
+                        <div class="search-result-content">
+                            <div class="search-result-name">${user.displayName || user.username}</div>
+                            <div class="search-result-meta">
+                                ${email ? `<span><i class="fas fa-envelope"></i> ${email}</span>` : ''}
+                                ${title ? `<span><i class="fas fa-briefcase"></i> ${title}</span>` : ''}
+                                ${department ? `<span><i class="fas fa-building"></i> ${department}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            resultsContainer.innerHTML = html;
+        }
+
+        function showSearchResults() {
+            document.getElementById('searchResults').style.display = 'block';
+        }
+
+        function hideSearchResults() {
+            document.getElementById('searchResults').style.display = 'none';
+        }
+
+        // User Management Functions
+        function loadUser(username) {
+            hideSearchResults();
+            hideUserDetails();
+            
+            if (isLoading) return;
+            isLoading = true;
+            
+            fetch(`/api/user/${username}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('User not found');
+                    }
+                    return response.json();
+                })
+                .then(user => {
+                    currentUser = user;
+                    populateUserDetails(user);
+                    showUserDetails();
+                    
+                    // Smooth scroll to user details
+                    document.getElementById('userDetails').scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                })
+                .catch(error => {
+                    showAlert('Error loading user: ' + error.message, 'danger');
+                })
+                .finally(() => {
+                    isLoading = false;
+                });
+        }
+
+        function populateUserDetails(user) {
+            // Header information
+            const initials = getInitials(user.displayName || user.username);
+            document.getElementById('userAvatar').textContent = initials;
+            document.getElementById('userDisplayName').textContent = user.displayName || user.username;
+            
+            // Update header meta info
+            const emailSpan = document.querySelector('#userEmail span');
+            const titleSpan = document.querySelector('#userTitle span');
+            const departmentSpan = document.querySelector('#userDepartment span');
+            
+            emailSpan.textContent = user.email || 'No email';
+            titleSpan.textContent = user.title || 'No title';
+            departmentSpan.textContent = user.department || 'No department';
+            
+            // Form fields
+            document.getElementById('username').value = user.username || '';
+            document.getElementById('email').value = user.email || '';
+            document.getElementById('firstName').value = user.firstName || '';
+            document.getElementById('lastName').value = user.lastName || '';
+            document.getElementById('phone').value = user.phone || '';
+            document.getElementById('title').value = user.title || '';
+            document.getElementById('department').value = user.department || '';
+            document.getElementById('managerDN').value = user.manager || '';
+            
+            // Manager information
+            const currentManagerDiv = document.getElementById('currentManager');
+            const managerNameSpan = document.getElementById('currentManagerName');
+            const managerSearchInput = document.getElementById('managerSearch');
+            
+            if (user.managerInfo) {
+                managerNameSpan.textContent = user.managerInfo.displayName || user.managerInfo.username;
+                managerSearchInput.value = user.managerInfo.displayName || user.managerInfo.username;
+                currentManagerDiv.style.display = 'block';
+            } else {
+                currentManagerDiv.style.display = 'none';
+                managerSearchInput.value = '';
+            }
+        }
+
+        function showUserDetails() {
+            document.getElementById('userDetails').style.display = 'block';
+        }
+
+        function hideUserDetails() {
+            document.getElementById('userDetails').style.display = 'none';
+        }
+
+        function handleUserFormSubmit(event) {
+            event.preventDefault();
+            
+            if (!currentUser) return;
+            
+            const saveBtn = document.getElementById('saveBtn');
+            setButtonLoading(saveBtn, true);
+            
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData);
+            
+            fetch(`/user/${currentUser.username}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+                
+                showAlert('User information updated successfully!', 'success');
+                // Reload user data to show updated information
+                loadUser(currentUser.username);
+            })
+            .catch(error => {
+                showAlert('Error updating user: ' + error.message, 'danger');
+            })
+            .finally(() => {
+                setButtonLoading(saveBtn, false);
+            });
+        }
+
+        function handleCancel() {
+            hideUserDetails();
+            document.getElementById('searchInput').value = '';
+            hideSearchResults();
+            currentUser = null;
+        }
+
+        // Manager Search Functions
+        const debouncedManagerSearch = debounce((searchTerm) => {
+            if (searchTerm.length < 2) {
+                hideManagerDropdown();
+                return;
+            }
+            performManagerSearch(searchTerm);
+        }, 300);
+
+        function handleManagerSearchInput(event) {
+            const searchTerm = event.target.value.trim();
+            debouncedManagerSearch(searchTerm);
+        }
+
+        function performManagerSearch(searchTerm) {
+            const dropdown = document.getElementById('managerDropdown');
+            
+            showManagerDropdown();
+            dropdown.innerHTML = `
+                <div class="manager-option">
+                    <div class="loading-spinner"></div>
+                    Searching...
+                </div>
+            `;
+            
+            fetch(`/search-managers?q=${encodeURIComponent(searchTerm)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        dropdown.innerHTML = `
+                            <div class="manager-option">
+                                <i class="fas fa-exclamation-triangle text-danger"></i>
+                                ${data.error}
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    if (data.users.length === 0) {
+                        dropdown.innerHTML = `
+                            <div class="manager-option">
+                                <i class="fas fa-user-slash"></i>
+                                No users found
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    renderManagerOptions(data.users);
+                })
+                .catch(error => {
+                    dropdown.innerHTML = `
+                        <div class="manager-option">
+                            <i class="fas fa-exclamation-triangle text-danger"></i>
+                            Error: ${error.message}
+                        </div>
+                    `;
+                });
+        }
+
+        function renderManagerOptions(users) {
+            const dropdown = document.getElementById('managerDropdown');
+            
+            const html = users.map(user => {
+                const initials = getInitials(user.displayName || user.username);
+                const email = user.email || '';
+                
+                return `
+                    <div class="manager-option" onclick="selectManager('${user.dn}', '${(user.displayName || user.username).replace(/'/g, "\\'")}')">
+                        <div class="manager-option-avatar">${initials}</div>
+                        <div>
+                            <div class="fw-bold">${user.displayName || user.username}</div>
+                            ${email ? `<div class="text-muted small">${email}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            dropdown.innerHTML = html;
+        }
+
+        function selectManager(dn, displayName) {
+            document.getElementById('managerDN').value = dn;
+            document.getElementById('managerSearch').value = displayName;
+            hideManagerDropdown();
+        }
+
+        function showManagerDropdown() {
+            document.getElementById('managerDropdown').style.display = 'block';
+        }
+
+        function hideManagerDropdown() {
+            document.getElementById('managerDropdown').style.display = 'none';
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Authentication
+            checkAuthentication();
+            
+            // Form submissions
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            document.getElementById('userForm').addEventListener('submit', handleUserFormSubmit);
+            
+            // Button clicks
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+            document.getElementById('cancelBtn').addEventListener('click', handleCancel);
+            
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', handleSearchInput);
+            document.getElementById('managerSearch').addEventListener('input', handleManagerSearchInput);
+            
+            // Click outside to close dropdowns
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.manager-search-container')) {
+                    hideManagerDropdown();
+                }
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(event) {
+                // Escape key to close modals/details
+                if (event.key === 'Escape') {
+                    if (document.getElementById('userDetails').style.display === 'block') {
+                        handleCancel();
+                    }
+                    hideManagerDropdown();
+                }
+                
+                // Ctrl/Cmd + K to focus search
+                if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+                    event.preventDefault();
+                    document.getElementById('searchInput').focus();
+                }
+            });
+        });
+
+        // Enhanced error handling for fetch requests
+        function handleFetchError(response) {
+            if (response.status === 401) {
+                showAlert('Session expired. Please login again.', 'warning');
+                setTimeout(() => location.reload(), 2000);
+                return true;
+            }
+            return false;
+        }
+    </script>
+</body>
+</html>
