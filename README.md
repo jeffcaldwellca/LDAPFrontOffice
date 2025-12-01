@@ -47,8 +47,8 @@ This web application allows authorized users to view and modify **common Active 
 
 ### 1. Clone or Download the Repository
 ```bash
-git clone https://github.com/jeffcaldwellca/ldap-front-office.git
-cd ldap-front-office
+git clone https://github.com/jeffcaldwellca/LDAPFrontOffice.git
+cd LDAPFrontOffice
 ```
 
 ### 2. Install Dependencies
@@ -180,7 +180,7 @@ Replace the logo file at `assets/Logosm.png` with your company logo. Recommended
 
 ```bash
 # Copy application to Apache web directory
-sudo cp -r /path/to/ldap-front-office /var/www/html/ldap-manager
+sudo cp -r /path/to/LDAPFrontOffice /var/www/html/ldap-manager
 sudo chown -R www-data:www-data /var/www/html/ldap-manager
 ```
 
