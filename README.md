@@ -505,7 +505,7 @@ ldapsearch -x -H ldap://yourserver:389 -D "user@domain.local" -W \
 
 ## 📝 License
 
-This project is open source. Please check the repository for license details.
+GPL-3.0. See [LICENSE](LICENSE).
 
 ## 👤 Author
 
